@@ -22,7 +22,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "crisis_resilience_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

@@ -12,5 +12,7 @@ data class MessageEntity(
     val timestamp: Long,
     val latitude: Double,
     val longitude: Double,
-    val isRelayed: Boolean
+    val isRelayed: Boolean = false,
+    val customText: String = "",
+    val isIncoming: Boolean = true
 )
