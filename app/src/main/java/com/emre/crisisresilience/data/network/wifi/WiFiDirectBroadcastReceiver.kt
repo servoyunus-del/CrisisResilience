@@ -38,9 +38,14 @@ class WiFiDirectBroadcastReceiver(
                 
                 if (networkInfo?.isConnected == true) {
                     wifiDirectManager.updateConnectionStatus(true)
-                    // Bağlantı kurulduğunda grup bilgilerini vs. çekmek için requestConnectionInfo kullanılabilir
+                    
+                    // Bağlantı kurulduğunda cihazın rolünü (Owner/Client) öğren ve Soketi başlat
+                    manager.requestConnectionInfo(channel) { info ->
+                        wifiDirectManager.handleConnectionInfo(info)
+                    }
                 } else {
                     wifiDirectManager.updateConnectionStatus(false)
+                    wifiDirectManager.p2pSocketManager?.closeConnections()
                 }
             }
 

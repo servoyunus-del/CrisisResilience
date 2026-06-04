@@ -15,6 +15,9 @@ class WifiDirectManager(
     private val manager: WifiP2pManager,
     private val channel: WifiP2pManager.Channel
 ) {
+    // Soket yönetimi (Dependency Injection ile inject edilebilir, şimdilik manuel ekliyoruz)
+    var p2pSocketManager: P2pSocketManager? = null
+
     // Çevredeki cihazların listesini UI'a StateFlow olarak sunar
     private val _peers = MutableStateFlow<List<WifiP2pDevice>>(emptyList())
     val peers: StateFlow<List<WifiP2pDevice>> = _peers.asStateFlow()
@@ -94,5 +97,19 @@ class WifiDirectManager(
     
     fun updateThisDevice(device: WifiP2pDevice) {
         _thisDevice.value = device
+    }
+
+    // P2P Bağlantısı kurulduğunda cihazın rolüne göre soket başlatır
+    fun handleConnectionInfo(info: android.net.wifi.p2p.WifiP2pInfo) {
+        if (info.groupFormed && info.isGroupOwner) {
+            // Cihaz Sunucu (Group Owner)
+            p2pSocketManager?.startServer()
+        } else if (info.groupFormed) {
+            // Cihaz İstemci (Client)
+            val ownerIp = info.groupOwnerAddress?.hostAddress
+            ownerIp?.let {
+                p2pSocketManager?.connectAsClient(it)
+            }
+        }
     }
 }
