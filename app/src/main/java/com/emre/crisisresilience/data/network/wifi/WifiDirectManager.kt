@@ -86,6 +86,23 @@ class WifiDirectManager(
         })
     }
     
+    // P2P ağından kopmak ve bağlantıyı kesmek için
+    @SuppressLint("MissingPermission")
+    fun disconnect() {
+        manager.removeGroup(channel, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                p2pSocketManager?.closeConnections()
+                updateConnectionStatus(false)
+            }
+
+            override fun onFailure(reason: Int) {
+                manager.cancelConnect(channel, null)
+                p2pSocketManager?.closeConnections()
+                updateConnectionStatus(false)
+            }
+        })
+    }
+    
     // Broadcast Receiver üzerinden tetiklenen güncelleyici fonksiyonlar
     fun updatePeers(deviceList: Collection<WifiP2pDevice>) {
         _peers.value = deviceList.toList()

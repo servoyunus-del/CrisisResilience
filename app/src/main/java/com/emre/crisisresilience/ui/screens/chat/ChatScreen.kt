@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Send
+import androidx.navigation.NavController
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,11 +26,17 @@ import java.util.*
 
 @Composable
 fun ChatScreen(
+    navController: NavController,
     viewModel: ChatViewModel = hiltViewModel(),
     myStatus: String = "BİLİNMİYOR" // HomeViewModel'dan Navigation args ile gelebilir veya ayrı flow'dan beslenebilir
 ) {
     val messages by viewModel.messagesFlow.collectAsState(initial = emptyList())
     var inputText by remember { mutableStateOf("") }
+
+    BackHandler {
+        viewModel.disconnect()
+        navController.popBackStack()
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -42,12 +52,32 @@ fun ChatScreen(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
+                IconButton(
+                    onClick = {
+                        viewModel.disconnect()
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Geri", tint = Color.White)
+                }
+
                 Text(
                     text = "P2P Güvenli Ağ",
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
+
+                IconButton(
+                    onClick = {
+                        viewModel.disconnect()
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Bağlantıyı Kes", tint = Color.Red)
+                }
             }
 
             // Mesaj Listesi

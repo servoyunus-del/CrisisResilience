@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.emre.crisisresilience.data.local.dao.MessageDao
 import com.emre.crisisresilience.data.local.entity.MessageEntity
 import com.emre.crisisresilience.data.network.wifi.P2pSocketManager
+import com.emre.crisisresilience.data.network.wifi.WifiDirectManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,11 +19,17 @@ import com.emre.crisisresilience.data.location.LocationTracker
 class ChatViewModel @Inject constructor(
     private val messageDao: MessageDao,
     private val p2pSocketManager: P2pSocketManager,
-    private val locationTracker: LocationTracker
+    private val locationTracker: LocationTracker,
+    private val wifiDirectManager: WifiDirectManager
 ) : ViewModel() {
 
     // Veritabanındaki tüm mesajları akış olarak dinler
     val messagesFlow: Flow<List<MessageEntity>> = messageDao.getAllMessagesFlow()
+
+    fun disconnect() {
+        wifiDirectManager.disconnect()
+        p2pSocketManager.closeConnections()
+    }
 
     // Mesaj gönderme işlemi
     fun sendMessage(text: String, myStatus: String) {
@@ -29,7 +37,7 @@ class ChatViewModel @Inject constructor(
 
         val myDeviceName = Build.MODEL ?: "Bilinmeyen Cihaz"
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // Arka planda gerçek GPS konumunu çek
             val location = locationTracker.getCurrentLocation()
             val lat = location?.latitude ?: 0.0

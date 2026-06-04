@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun HomeScreen(
     onNavigateToChat: () -> Unit,
+    onNavigateToSos: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val peers by viewModel.peers.collectAsState()
@@ -113,6 +114,20 @@ fun HomeScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(text = "ETRAFTAKİ CİHAZLARI TARA", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // SOS Flaş Butonu
+            Button(
+                onClick = onNavigateToSos,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(text = "🚨 SOS FLAŞ / SİNYAL", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(24.dp))

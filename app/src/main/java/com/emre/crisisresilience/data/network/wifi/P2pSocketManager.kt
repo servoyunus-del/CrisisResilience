@@ -1,5 +1,6 @@
 package com.emre.crisisresilience.data.network.wifi
 
+import android.os.Build
 import android.util.Log
 import com.emre.crisisresilience.data.local.dao.MessageDao
 import com.emre.crisisresilience.data.local.entity.MessageEntity
@@ -101,12 +102,16 @@ class P2pSocketManager(
             val jsonObject = JSONObject(jsonString)
             
             val entity = MessageEntity(
+                // ID bilerek atlanıyor, Room veritabanında yeni bir kayıt oluşturması için 0 olarak kalması daha iyi.
+                // İstenirse id = jsonObject.optInt("id", 0) yapılabilir ancak conflict yaratabilir.
                 senderName = jsonObject.optString("senderName", "Bilinmeyen Cihaz"),
-                statusMessage = jsonObject.optString("statusMessage", ""),
+                statusMessage = jsonObject.optString("status", ""),
                 timestamp = jsonObject.optLong("timestamp", System.currentTimeMillis()),
                 latitude = jsonObject.optDouble("latitude", 0.0),
                 longitude = jsonObject.optDouble("longitude", 0.0),
-                isRelayed = true // Mesh ağında dışarıdan geldiği için relayed true
+                isRelayed = true, // Mesh ağında dışarıdan geldiği için relayed true
+                customText = jsonObject.optString("messageText", ""),
+                isIncoming = true // Dışarıdan soket ile geldiği için her zaman true olmalıdır.
             )
             
             messageDao.insertMessage(entity)
@@ -125,12 +130,14 @@ class P2pSocketManager(
                 if (outputStream != null) {
                     
                     val jsonObject = JSONObject().apply {
-                        put("senderName", messageEntity.senderName)
-                        put("statusMessage", messageEntity.statusMessage)
+                        put("id", messageEntity.id)
+                        put("senderName", Build.MODEL)
+                        put("messageText", messageEntity.customText)
                         put("timestamp", messageEntity.timestamp)
+                        put("isIncoming", messageEntity.isIncoming)
+                        put("status", messageEntity.statusMessage)
                         put("latitude", messageEntity.latitude)
                         put("longitude", messageEntity.longitude)
-                        put("isRelayed", messageEntity.isRelayed)
                     }
                     
                     val bytes = jsonObject.toString().toByteArray()
