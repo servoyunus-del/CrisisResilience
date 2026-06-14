@@ -2,12 +2,6 @@
 
 CrisisResilience, afet ve acil durum senaryolarında hücresel ağların (4G/5G), baz istasyonlarının veya genel internet bağlantısının tamamen çöktüğü durumlarda, mobil cihazların kendi aralarında **P2P (Peer-to-Peer) Mesh** ağı kurarak haberleşmesini sağlayan, **Offline-First** mimariye sahip yenilikçi bir acil durum iletişim platformudur.
 
----
-
-|---|---|
-| <img src="app/src/main/res/drawable/ic_app_icon.png" width="150" alt="App Icon"/> | *(Uygulama İconu)* |
-
----
 
 ## 🎯 Temel Özellikler (Core Features)
 
