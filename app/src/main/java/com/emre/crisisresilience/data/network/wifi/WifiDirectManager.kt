@@ -56,16 +56,25 @@ class WifiDirectManager(
 
     @SuppressLint("MissingPermission")
     fun discoverPeers() {
-        // Cihaz keşfini başlatıyoruz
-        manager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
-            override fun onSuccess() {
-                // Keşif başarıyla başladı, Receiver "PEERS_CHANGED" alacak
-            }
+        try {
+            manager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+                override fun onSuccess() {
+                    android.util.Log.d("WifiDirect", "Keşif başarıyla başlatıldı.")
+                }
 
-            override fun onFailure(reasonCode: Int) {
-                // Keşif başlatılamadı, hata yönetimi eklenebilir
-            }
-        })
+                override fun onFailure(reasonCode: Int) {
+                    val reason = when (reasonCode) {
+                        WifiP2pManager.P2P_UNSUPPORTED -> "P2P Desteklenmiyor"
+                        WifiP2pManager.ERROR -> "Dahili Hata"
+                        WifiP2pManager.BUSY -> "Sistem Meşgul"
+                        else -> "Bilinmeyen Hata ($reasonCode)"
+                    }
+                    android.util.Log.e("WifiDirect", "Keşif başarısız: $reason")
+                }
+            })
+        } catch (e: SecurityException) {
+            android.util.Log.e("WifiDirect", "İzin eksik! Keşif başlatılamadı.", e)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -75,32 +84,42 @@ class WifiDirectManager(
             // wps.setup ayarları da eklenebilir
         }
 
-        manager.connect(channel, config, object : WifiP2pManager.ActionListener {
-            override fun onSuccess() {
-                // Bağlantı isteği gönderildi
-            }
+        try {
+            manager.connect(channel, config, object : WifiP2pManager.ActionListener {
+                override fun onSuccess() {
+                    android.util.Log.d("WifiDirect", "Bağlantı isteği gönderildi: ${device.deviceAddress}")
+                }
 
-            override fun onFailure(reason: Int) {
-                // Bağlantı isteği reddedildi veya hata oluştu
-            }
-        })
+                override fun onFailure(reason: Int) {
+                    android.util.Log.e("WifiDirect", "Bağlantı reddedildi veya hata oluştu. Kod: $reason")
+                }
+            })
+        } catch (e: SecurityException) {
+            android.util.Log.e("WifiDirect", "İzin eksik! Bağlantı kurulamadı.", e)
+        }
     }
     
     // P2P ağından kopmak ve bağlantıyı kesmek için
     @SuppressLint("MissingPermission")
     fun disconnect() {
-        manager.removeGroup(channel, object : WifiP2pManager.ActionListener {
-            override fun onSuccess() {
-                p2pSocketManager?.closeConnections()
-                updateConnectionStatus(false)
-            }
+        try {
+            manager.removeGroup(channel, object : WifiP2pManager.ActionListener {
+                override fun onSuccess() {
+                    android.util.Log.d("WifiDirect", "Gruptan çıkıldı.")
+                    p2pSocketManager?.closeConnections()
+                    updateConnectionStatus(false)
+                }
 
-            override fun onFailure(reason: Int) {
-                manager.cancelConnect(channel, null)
-                p2pSocketManager?.closeConnections()
-                updateConnectionStatus(false)
-            }
-        })
+                override fun onFailure(reason: Int) {
+                    android.util.Log.e("WifiDirect", "Gruptan çıkılamadı, bağlantı iptal ediliyor. Kod: $reason")
+                    manager.cancelConnect(channel, null)
+                    p2pSocketManager?.closeConnections()
+                    updateConnectionStatus(false)
+                }
+            })
+        } catch (e: SecurityException) {
+            android.util.Log.e("WifiDirect", "İzin eksik! Bağlantı kesilemedi.", e)
+        }
     }
     
     // Broadcast Receiver üzerinden tetiklenen güncelleyici fonksiyonlar

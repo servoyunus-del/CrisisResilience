@@ -19,7 +19,14 @@ class SosViewModel @Inject constructor(
     private val _isFlashing = MutableStateFlow(false)
     val isFlashing: StateFlow<Boolean> = _isFlashing.asStateFlow()
 
+    private val _customText = MutableStateFlow("SOS")
+    val customText: StateFlow<String> = _customText.asStateFlow()
+
     private var sosJob: Job? = null
+
+    fun updateCustomText(text: String) {
+        _customText.value = text
+    }
 
     fun toggleSos() {
         if (_isFlashing.value) {
@@ -33,9 +40,10 @@ class SosViewModel @Inject constructor(
         _isFlashing.value = true
         // Eski job varsa iptal et
         sosJob?.cancel()
-        
+
+        val text = _customText.value.ifBlank { "SOS" }
         sosJob = viewModelScope.launch {
-            sosFlashController.startSosSignal("SOS")
+            sosFlashController.startSosSignal(text)
         }
     }
 

@@ -71,4 +71,7 @@ dependencies {
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.55")
     ksp("com.google.dagger:hilt-android-compiler:2.55")
+
+    // OSMDroid (Çevrimdışı Haritalar)
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }

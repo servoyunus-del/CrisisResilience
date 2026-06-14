@@ -49,4 +49,10 @@ object NetworkModule {
         wifiDirectManager.p2pSocketManager = p2pSocketManager
         return wifiDirectManager
     }
+
+    @Provides
+    @Singleton
+    fun provideBleManager(@ApplicationContext context: Context): com.emre.crisisresilience.data.network.bluetooth.BleManager {
+        return com.emre.crisisresilience.data.network.bluetooth.BleManager(context)
+    }
 }

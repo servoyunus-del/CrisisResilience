@@ -16,6 +16,9 @@ interface MessageDao {
     @Query("SELECT * FROM messages ORDER BY timestamp DESC")
     fun getAllMessagesFlow(): Flow<List<MessageEntity>>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM messages WHERE messageId = :messageId LIMIT 1)")
+    fun isMessageExists(messageId: String): Boolean
+
     @Query("DELETE FROM messages")
     fun clearAllMessages()
 }

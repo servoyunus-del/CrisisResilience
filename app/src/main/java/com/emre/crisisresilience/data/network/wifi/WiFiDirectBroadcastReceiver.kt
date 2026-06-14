@@ -26,8 +26,12 @@ class WiFiDirectBroadcastReceiver(
 
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 // Çevredeki cihaz listesi değişti
-                manager.requestPeers(channel) { peerList ->
-                    wifiDirectManager.updatePeers(peerList.deviceList)
+                try {
+                    manager.requestPeers(channel) { peerList ->
+                        wifiDirectManager.updatePeers(peerList.deviceList)
+                    }
+                } catch (e: SecurityException) {
+                    android.util.Log.e("WifiDirectReceiver", "İzin eksik! Cihaz listesi alınamadı.", e)
                 }
             }
 
