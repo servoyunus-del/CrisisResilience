@@ -4,11 +4,8 @@ CrisisResilience, afet ve acil durum senaryolarında hücresel ağların (4G/5G)
 
 ---
 
-## 📱 Ekran Görüntüleri & Arayüz
-
-| Ana Ekran (Afet Modu) | Mesajlaşma & Keşif |
 |---|---|
-| <img src="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" width="150" alt="App Icon"/> | *(Uygulama İçi Ekran Görüntüsü)* |
+| <img src="app/src/main/res/drawable/ic_app_icon.png" width="150" alt="App Icon"/> | *(Uygulama İconu)* |
 
 ---
 
